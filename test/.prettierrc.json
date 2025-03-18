@@ -1,0 +1,7 @@
+{
+    "plugins": ["../dist/index.mjs"],
+    "semi": true,
+    "tabWidth": 4,
+    "singleQuote": true,
+    "endOfLine": "auto"
+}

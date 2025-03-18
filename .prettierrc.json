@@ -1,0 +1,14 @@
+{
+    "semi": true,
+    "tabWidth": 4,
+    "singleQuote": true,
+    "endOfLine": "auto",
+    "overrides": [
+        {
+            "files": "**/package.json",
+            "options": {
+                "tabWidth": 2
+            }
+        }
+    ]
+}

@@ -1,0 +1,3 @@
+a:has(span) {
+    @apply invisible cursor-pointer align-middle transition-all text-sm font-extralight italic opacity-0;
+}
