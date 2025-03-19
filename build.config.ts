@@ -7,4 +7,7 @@ export default defineBuildConfig({
             respectExternal: true,
         },
     },
+    replace: {
+        __TEST__: 'false',
+    },
 });

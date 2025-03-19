@@ -1,3 +1,5 @@
+import type { AnyNode } from 'postcss';
+import { type ParserOptions } from 'prettier';
 import {
     collapseVariantGroup,
     notNull,
@@ -8,7 +10,12 @@ import {
 /**
  * Copied from https://github.com/unocss/unocss/blob/0c8404c98e7facb922be6505b4a19aa80b49c5dd/virtual-shared/integration/src/sort-rules.ts#L4-L44
  */
-export async function sortRules(rules: string, uno: UnoGenerator) {
+export async function sortRules(
+    rules: string,
+    node: AnyNode,
+    uno: UnoGenerator,
+    prettier: ParserOptions,
+) {
     const unknown: string[] = [];
 
     // enable details for variant handlers
@@ -17,7 +24,7 @@ export async function sortRules(rules: string, uno: UnoGenerator) {
     // const hasAttributify = !!uno.config.presets.find(i => i.name === '@unocss/preset-attributify')
     // const hasVariantGroup = !!uno.config.transformers?.find(i => i.name === '@unocss/transformer-variant-group')
 
-    const expandedResult = parseVariantGroup(rules); // todo read seperators from config
+    const expandedResult = parseVariantGroup(rules, uno.config.separators);
     rules = expandedResult.expanded;
 
     const result = await Promise.all(
@@ -34,15 +41,48 @@ export async function sortRules(rules: string, uno: UnoGenerator) {
         }),
     );
 
-    let sorted = result
+    const resultArray = result
         .filter(notNull)
         .sort((a, b) => {
             let result = a[0] - b[0];
             if (result === 0) result = a[1].localeCompare(b[1]);
             return result;
         })
-        .map((i) => i[1])
-        .join(' ');
+        .map((i) => i[1]);
+
+    let startingColumn = 0;
+    if (node.type === ('css-atrule' as 'atrule')) {
+        startingColumn = node.positionInside(node.name.length + 1).column;
+    } else if (node.type === ('css-decl' as 'decl')) {
+        startingColumn = node.positionInside(node.prop.length + 1).column;
+    }
+
+    const lines: string[][] = [[]];
+    // Keeps track of characters in current line
+    let charCount = 0;
+
+    for (const result of resultArray) {
+        const curLine = lines.at(-1)!;
+
+        // Adds the amount of characters in current line, including spaces (curLine.length)
+        // and see if the next added item would go over the print width.
+        const needsNewline =
+            charCount + result.length + 1 + curLine.length + startingColumn >=
+            prettier.printWidth;
+
+        if (needsNewline) {
+            lines.push([result]);
+            charCount = result.length;
+        } else {
+            curLine.push(result);
+            charCount += result.length;
+        }
+    }
+
+    const indent =
+        node.raws.before +
+        (prettier.useTabs ? '\t' : ' ').repeat(prettier.tabWidth);
+    let sorted = lines.map((arr) => arr.join(' ')).join(indent);
 
     if (expandedResult?.prefixes.length)
         sorted = collapseVariantGroup(sorted, expandedResult.prefixes);

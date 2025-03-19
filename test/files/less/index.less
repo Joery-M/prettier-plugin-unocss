@@ -1,0 +1,27 @@
+// Order
+a:has(span) {
+    @apply align-middle font-extralight opacity-0 invisible text-sm italic;
+}
+
+// Line breaks
+a:has(span) {
+    --at-apply: align-middle font-extralight opacity-0 invisible text-sm italic transition-all cursor-pointer;
+}
+
+// Spacing
+body {
+    @apply p-1        gap-1 mx-2;
+}
+
+// Variant group
+div:empty {
+    @apply hover:(font-medium bg-gray-400) bg-white font-light m-2;
+}
+
+// Variant group merging
+body > #app {
+    @apply hover:(font-medium bg-gray-400) hover:font-light;
+}
+body > #app {
+    --at-apply: hover:(font-medium bg-gray-400) hover:font-light;
+}
