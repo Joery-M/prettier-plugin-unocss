@@ -1,17 +1,25 @@
-import type { AnyNode } from 'postcss';
-import { type ParserOptions } from 'prettier';
+import type { Doc } from 'prettier';
+import { builders } from 'prettier/doc';
 import { notNull, parseVariantGroup, type UnoGenerator } from 'unocss';
-import { BREAK_SEPARATOR } from './css';
+
+const START_QUOTE_RE = /^\s*'/;
+const ANY_QUOTE_RE = /(^\s*'|'\s*$)/g;
 
 /**
  * Copied from https://github.com/unocss/unocss/blob/0c8404c98e7facb922be6505b4a19aa80b49c5dd/virtual-shared/integration/src/sort-rules.ts#L4-L44
  */
 export async function sortRules(
     rules: string,
-    node: AnyNode,
     uno: UnoGenerator,
-    prettier: ParserOptions,
-) {
+): Promise<Doc> {
+    // The unocss docs say mismatched quotes are fine,
+    // but the postcss parser doesn't like it.
+    // So this can technically be 1 regex.
+    const hasQuotes = START_QUOTE_RE.test(rules);
+    if (hasQuotes) {
+        rules = rules.replace(ANY_QUOTE_RE, '');
+    }
+
     const unknown: string[] = [];
 
     // enable details for variant handlers
@@ -27,7 +35,7 @@ export async function sortRules(
         rules.split(/\s+/g).map(async (i) => {
             const token = await uno.parseToken(i);
             if (token == null) {
-                unknown.push(i);
+                unknown.push(i.trim());
                 return undefined;
             }
             const variantRank =
@@ -37,31 +45,42 @@ export async function sortRules(
         }),
     );
 
-    let sorted = result
+    const sorted: string[] = result
         .filter(notNull)
         .sort((a, b) => {
             let result = a[0] - b[0];
             if (result === 0) result = a[1].localeCompare(b[1]);
             return result;
         })
-        .map((i) => i[1])
-        .join(BREAK_SEPARATOR);
+        .map((i) => i[1]);
 
-    console.log(expandedResult);
-    if (expandedResult?.prefixes.length)
-        sorted = collapseVariantGroup(sorted, expandedResult.prefixes);
+    const sortedDocs = expandedResult?.prefixes.length
+        ? collapseVariantGroup(sorted, expandedResult.prefixes)
+        : sorted;
 
-    return [...unknown, sorted].join(BREAK_SEPARATOR).trim();
+    const quotes = hasQuotes ? "'" : '';
+    const res = [
+        quotes,
+        builders.group(
+            builders.indent(
+                builders.fill([
+                    ...builders.join(builders.line, unknown.filter(Boolean)),
+                    ...builders.join(builders.line, sortedDocs),
+                ]),
+            ),
+        ),
+        quotes,
+    ];
+    return res;
 }
 
 // Copied from https://github.com/unocss/unocss/blob/2c24158de0d37c5ba1006c337f61657a6b6e94b7/packages-engine/core/src/utils/variant-group.ts#L105
-function collapseVariantGroup(str: string, prefixes: string[]): string {
+function collapseVariantGroup(str: string[], prefixes: string[]): Doc[] {
     const collection = new Map<string, string[]>();
 
     const sortedPrefix = prefixes.sort((a, b) => b.length - a.length);
 
     return str
-        .split(BREAK_SEPARATOR)
         .map((part) => {
             const prefix = sortedPrefix.find((prefix) =>
                 part.startsWith(prefix),
@@ -84,7 +103,15 @@ function collapseVariantGroup(str: string, prefixes: string[]): string {
         .filter(notNull)
         .map((i) => {
             if (typeof i === 'string') return i;
-            return `${i.prefix}(${i.items.join(' ')})`;
-        })
-        .join(BREAK_SEPARATOR);
+            return builders.group([
+                i.prefix,
+                '(',
+                builders.group(
+                    builders.indent(
+                        builders.fill(builders.join(builders.line, i.items)),
+                    ),
+                ),
+                ')',
+            ]);
+        });
 }

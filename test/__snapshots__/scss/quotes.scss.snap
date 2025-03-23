@@ -1,0 +1,6 @@
+div:empty {
+  @apply 'm-2 bg-white font-light hover:(bg-gray-400 font-medium)';
+}
+body > #app {
+  --at-apply: 'hover:(bg-gray-400 font-light font-medium)';
+}

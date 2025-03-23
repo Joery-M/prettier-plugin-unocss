@@ -1,6 +1,5 @@
-import { type AnyNode, type Root, Declaration } from 'postcss';
+import { type AnyNode, type Root } from 'postcss';
 import type { AstPath, Doc, ParserOptions } from 'prettier';
-import { builders } from 'prettier/doc.js';
 import { type UnoGenerator } from 'unocss';
 import { sortRules } from './sort';
 
@@ -8,7 +7,7 @@ import { sortRules } from './sort';
 // directives, so this has to be hardcoded
 const applyVariableDirectives = ['--at-apply', '--uno-apply', '--uno'];
 
-export const BREAK_SEPARATOR = '~::BREAK_HERE::~';
+export const FormattedNodesMap = new WeakMap<AnyNode, Doc>();
 
 export async function transformCSS(
     ast: Root,
@@ -20,11 +19,9 @@ export async function transformCSS(
     ast.walk((node) => {
         if (node.type === ('css-atrule' as 'atrule') && node.name === 'apply') {
             promises.push(
-                sortRules(node.params, node, generator, prettier).then(
-                    (newParams) => {
-                        node.params = newParams;
-                    },
-                ),
+                sortRules(node.params, generator).then((newParams) => {
+                    FormattedNodesMap.set(node, newParams);
+                }),
             );
         } else if (
             node.type === ('css-decl' as 'decl') &&
@@ -34,15 +31,9 @@ export async function transformCSS(
             // @ts-expect-error type is not correct
             const params = node.value.text;
             promises.push(
-                sortRules(params, node, generator, prettier).then(
-                    (newParams) => {
-                        node.value = new Declaration({
-                            prop: node.prop,
-                            value: newParams,
-                            important: node.important,
-                        }).value;
-                    },
-                ),
+                sortRules(params, generator).then((newParams) => {
+                    FormattedNodesMap.set(node, newParams);
+                }),
             );
         }
     });
@@ -51,6 +42,10 @@ export async function transformCSS(
 }
 
 export function printRules(path: AstPath<AnyNode>): Doc | undefined {
+    if (!FormattedNodesMap.has(path.node)) {
+        return;
+    }
+
     if (
         path.node.type === ('css-atrule' as 'atrule') &&
         path.node.name === 'apply'
@@ -59,16 +54,7 @@ export function printRules(path: AstPath<AnyNode>): Doc | undefined {
             '@',
             path.node.name,
             ' ',
-            builders.group(
-                builders.indent(
-                    builders.fill(
-                        builders.join(
-                            builders.line,
-                            path.node.params.split(BREAK_SEPARATOR),
-                        ),
-                    ),
-                ),
-            ),
+            FormattedNodesMap.get(path.node)!,
             ';',
         ];
     } else if (
@@ -80,16 +66,7 @@ export function printRules(path: AstPath<AnyNode>): Doc | undefined {
             path.node.prop,
             ':',
             ' ',
-            builders.group(
-                builders.indent(
-                    builders.fill(
-                        builders.join(
-                            builders.line,
-                            path.node.value.split(BREAK_SEPARATOR),
-                        ),
-                    ),
-                ),
-            ),
+            FormattedNodesMap.get(path.node)!,
             ';',
         ];
     }
