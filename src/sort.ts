@@ -2,8 +2,7 @@ import type { Doc } from 'prettier';
 import { builders } from 'prettier/doc';
 import { notNull, parseVariantGroup, type UnoGenerator } from 'unocss';
 
-const START_QUOTE_RE = /^\s*'/;
-const ANY_QUOTE_RE = /(^\s*'|'\s*$)/g;
+const QUOTE_RE = /(^\s*'|'\s*$)/g;
 
 /**
  * Copied from https://github.com/unocss/unocss/blob/0c8404c98e7facb922be6505b4a19aa80b49c5dd/virtual-shared/integration/src/sort-rules.ts#L4-L44
@@ -12,12 +11,9 @@ export async function sortRules(
     rules: string,
     uno: UnoGenerator,
 ): Promise<Doc> {
-    // The unocss docs say mismatched quotes are fine,
-    // but the postcss parser doesn't like it.
-    // So this can technically be 1 regex.
-    const hasQuotes = START_QUOTE_RE.test(rules);
+    const hasQuotes = QUOTE_RE.test(rules);
     if (hasQuotes) {
-        rules = rules.replace(ANY_QUOTE_RE, '');
+        rules = rules.replace(QUOTE_RE, '');
     }
 
     const unknown: string[] = [];
