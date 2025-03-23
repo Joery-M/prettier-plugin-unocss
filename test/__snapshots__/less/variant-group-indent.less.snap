@@ -1,0 +1,16 @@
+body > #app {
+  @apply hover:(
+      invisible cursor-pointer align-middle text-sm font-extralight italic
+      opacity-0 transition-all
+    );
+}
+
+body > #app {
+  @apply invisible invisible cursor-pointer cursor-pointer align-middle
+    align-middle text-sm text-sm font-extralight font-extralight italic italic
+    opacity-0 opacity-0 transition-all transition-all
+    hover:(
+      invisible cursor-pointer align-middle text-sm font-extralight italic
+      opacity-0 transition-all
+    );
+}

@@ -106,11 +106,11 @@ function collapseVariantGroup(str: string[], prefixes: string[]): Doc[] {
             return builders.group([
                 i.prefix,
                 '(',
-                builders.group(
-                    builders.indent(
-                        builders.fill(builders.join(builders.line, i.items)),
-                    ),
-                ),
+                builders.indent([
+                    builders.softline,
+                    builders.fill(builders.join(builders.line, i.items)),
+                ]),
+                builders.softline,
                 ')',
             ]);
         });
