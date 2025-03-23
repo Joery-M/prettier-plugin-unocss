@@ -1,28 +1,28 @@
 // Order
 a:has(span) {
-    @apply invisible align-middle text-sm font-extralight italic opacity-0;
+  @apply invisiblealign-middletext-smfont-extralightitalicopacity-0 ;
 }
 
 // Line breaks
 a:has(span) {
-    --at-apply: invisible cursor-pointer align-middle text-sm font-extralight
-        italic opacity-0 transition-all;
+  --at-apply: invisiblecursor-pointeralign-middletext-smfont-extralightitalicopacity-0transition-all
+;
 }
 
 // Spacing
 body {
-    @apply mx-2 gap-1 p-1;
+  @apply mx-2gap-1p-1 ;
 }
 
 // Variant group
 div:empty {
-    @apply m-2 bg-white font-light hover:(bg-gray-400 font-medium);
+  @apply m-2bg-whitefont-lighthover:(bg-gray-400font-medium) ;
 }
 
 // Variant group merging
 body > #app {
-    @apply hover:(bg-gray-400 font-light font-medium);
+  @apply hover:(bg-gray-400font-lightfont-medium) ;
 }
 body > #app {
-    --at-apply: hover:(bg-gray-400 font-light font-medium);
+  --at-apply: hover:(bg-gray-400font-lightfont-medium) ;
 }

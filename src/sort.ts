@@ -1,5 +1,6 @@
 import type { AnyNode } from 'postcss';
-import { type ParserOptions } from 'prettier';
+import { type Doc, type ParserOptions } from 'prettier';
+import { builders, printer } from 'prettier/doc';
 import {
     collapseVariantGroup,
     notNull,
@@ -41,14 +42,31 @@ export async function sortRules(
         }),
     );
 
-    const resultArray = result
+    let sorted = result
         .filter(notNull)
         .sort((a, b) => {
             let result = a[0] - b[0];
             if (result === 0) result = a[1].localeCompare(b[1]);
             return result;
         })
-        .map((i) => i[1]);
+        .map((i) => i[1])
+        .join(' ');
+
+    if (expandedResult?.prefixes.length)
+        sorted = collapseVariantGroup(sorted, expandedResult.prefixes);
+
+    const indented = breakLines(unknown, sorted, node, prettier);
+
+    return indented;
+}
+
+function breakLines(
+    unknown: string[],
+    rules: string,
+    node: AnyNode,
+    prettier: ParserOptions,
+) {
+    const resultArray = rules.split(/\s+/g);
 
     let startingColumn = 0;
     if (node.type === ('css-atrule' as 'atrule')) {
@@ -56,8 +74,7 @@ export async function sortRules(
     } else if (node.type === ('css-decl' as 'decl')) {
         startingColumn = node.positionInside(node.prop.length + 1).column;
     }
-
-    const lines: string[][] = [[]];
+    const lines: Doc[][] = [[]];
     // Keeps track of characters in current line
     let charCount = 0;
 
@@ -79,13 +96,10 @@ export async function sortRules(
         }
     }
 
-    const indent =
-        node.raws.before +
-        (prettier.useTabs ? '\t' : ' ').repeat(prettier.tabWidth);
-    let sorted = lines.map((arr) => arr.join(' ')).join(indent);
-
-    if (expandedResult?.prefixes.length)
-        sorted = collapseVariantGroup(sorted, expandedResult.prefixes);
-
-    return [...unknown, sorted].join(' ').trim();
+    const beforeStr = node.toString().slice(0, startingColumn);
+    const formatted = lines.map((arr) => {
+        return builders.indent([builders.hardline, ]);
+    });
+    const filled = builders.group([beforeStr, formatted]);
+    return printer.printDocToString(filled, prettier).formatted.trim();
 }
