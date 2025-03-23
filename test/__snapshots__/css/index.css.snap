@@ -1,22 +1,22 @@
 /* Order */
 a:has(span) {
-  @apply invisiblealign-middletext-smfont-extralightitalicopacity-0 ;
+  @apply invisible align-middle text-sm font-extralight italic opacity-0;
 }
 
 /* Spacing */
 body {
-  @apply mx-2gap-1p-1 ;
+  @apply mx-2 gap-1 p-1;
 }
 
 /* Variant group */
 div:empty {
-  @apply m-2bg-whitefont-lighthover:(bg-gray-400font-medium) ;
+  @apply m-2 bg-white font-light hover:(bg-gray-400 font-medium);
 }
 
 /* Variant group merging */
 body > #app {
-  @apply hover:(bg-gray-400font-lightfont-medium) ;
+  @apply hover:(bg-gray-400 font-light font-medium);
 }
 body > #app {
-  --at-apply: hover:(bg-gray-400font-lightfont-medium) ;
+  --at-apply: hover:(bg-gray-400 font-light font-medium);
 }

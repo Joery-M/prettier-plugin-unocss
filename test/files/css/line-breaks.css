@@ -10,7 +10,9 @@ p {
 div {
     > div {
         > div {
-            @apply align-middle font-extralight opacity-0 invisible text-sm italic transition-all cursor-pointer;
+            @apply
+align-middle font-extralight opacity-0
+            invisible text-sm italic transition-all cursor-pointer;
         }
         > div {
             > div {

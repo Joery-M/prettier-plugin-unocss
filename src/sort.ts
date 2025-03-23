@@ -1,12 +1,7 @@
 import type { AnyNode } from 'postcss';
-import { type Doc, type ParserOptions } from 'prettier';
-import { builders, printer } from 'prettier/doc';
-import {
-    collapseVariantGroup,
-    notNull,
-    parseVariantGroup,
-    type UnoGenerator,
-} from 'unocss';
+import { type ParserOptions } from 'prettier';
+import { notNull, parseVariantGroup, type UnoGenerator } from 'unocss';
+import { BREAK_SEPARATOR } from './css';
 
 /**
  * Copied from https://github.com/unocss/unocss/blob/0c8404c98e7facb922be6505b4a19aa80b49c5dd/virtual-shared/integration/src/sort-rules.ts#L4-L44
@@ -50,56 +45,46 @@ export async function sortRules(
             return result;
         })
         .map((i) => i[1])
-        .join(' ');
+        .join(BREAK_SEPARATOR);
 
+    console.log(expandedResult);
     if (expandedResult?.prefixes.length)
         sorted = collapseVariantGroup(sorted, expandedResult.prefixes);
 
-    const indented = breakLines(unknown, sorted, node, prettier);
-
-    return indented;
+    return [...unknown, sorted].join(BREAK_SEPARATOR).trim();
 }
 
-function breakLines(
-    unknown: string[],
-    rules: string,
-    node: AnyNode,
-    prettier: ParserOptions,
-) {
-    const resultArray = rules.split(/\s+/g);
+// Copied from https://github.com/unocss/unocss/blob/2c24158de0d37c5ba1006c337f61657a6b6e94b7/packages-engine/core/src/utils/variant-group.ts#L105
+function collapseVariantGroup(str: string, prefixes: string[]): string {
+    const collection = new Map<string, string[]>();
 
-    let startingColumn = 0;
-    if (node.type === ('css-atrule' as 'atrule')) {
-        startingColumn = node.positionInside(node.name.length + 1).column;
-    } else if (node.type === ('css-decl' as 'decl')) {
-        startingColumn = node.positionInside(node.prop.length + 1).column;
-    }
-    const lines: Doc[][] = [[]];
-    // Keeps track of characters in current line
-    let charCount = 0;
+    const sortedPrefix = prefixes.sort((a, b) => b.length - a.length);
 
-    for (const result of resultArray) {
-        const curLine = lines.at(-1)!;
+    return str
+        .split(BREAK_SEPARATOR)
+        .map((part) => {
+            const prefix = sortedPrefix.find((prefix) =>
+                part.startsWith(prefix),
+            );
+            if (!prefix) return part;
 
-        // Adds the amount of characters in current line, including spaces (curLine.length)
-        // and see if the next added item would go over the print width.
-        const needsNewline =
-            charCount + result.length + 1 + curLine.length + startingColumn >=
-            prettier.printWidth;
-
-        if (needsNewline) {
-            lines.push([result]);
-            charCount = result.length;
-        } else {
-            curLine.push(result);
-            charCount += result.length;
-        }
-    }
-
-    const beforeStr = node.toString().slice(0, startingColumn);
-    const formatted = lines.map((arr) => {
-        return builders.indent([builders.hardline, ]);
-    });
-    const filled = builders.group([beforeStr, formatted]);
-    return printer.printDocToString(filled, prettier).formatted.trim();
+            const body = part.slice(prefix.length);
+            if (collection.has(prefix)) {
+                collection.get(prefix)!.push(body);
+                return null;
+            } else {
+                const items = [body];
+                collection.set(prefix, items);
+                return {
+                    prefix,
+                    items,
+                };
+            }
+        })
+        .filter(notNull)
+        .map((i) => {
+            if (typeof i === 'string') return i;
+            return `${i.prefix}(${i.items.join(' ')})`;
+        })
+        .join(BREAK_SEPARATOR);
 }
