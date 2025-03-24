@@ -1,9 +1,9 @@
-import unoPlugin from '..';
-import { format } from 'prettier';
-import { describe, expect, test } from 'vitest';
-import { glob } from 'tinyglobby';
 import { readFile } from 'fs/promises';
-import { extname, join } from 'path';
+import { join, relative, sep } from 'path';
+import { format } from 'prettier';
+import { glob } from 'tinyglobby';
+import { describe, expect, test } from 'vitest';
+import '..'; // required for vitest
 import { getSnapshotPath } from './utils';
 
 describe('formatting', async () => {
@@ -15,9 +15,13 @@ describe('formatting', async () => {
             encoding: 'utf-8',
         });
 
+        let parser = relative(
+            join(import.meta.dirname, './files/'),
+            filepath,
+        ).split(sep)[0];
         const formatted = await format(source, {
             plugins: [join(import.meta.dirname, '../dist/index.cjs')],
-            parser: extname(path).slice(1),
+            parser,
             filepath,
             semi: true,
             tabWidth: 2,
