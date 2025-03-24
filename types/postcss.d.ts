@@ -5,3 +5,9 @@ declare module 'prettier/parser-postcss' {
         postcss: Printer;
     };
 }
+
+declare module 'prettier/parser-html' {
+    export declare const printers: {
+        html: Printer;
+    };
+}

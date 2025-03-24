@@ -1,17 +1,18 @@
 import { type AnyNode, type Root } from 'postcss';
-import type { AstPath, Doc } from 'prettier';
-import { type UnoGenerator } from 'unocss';
+import type { AstPath, Doc, ParserOptions } from 'prettier';
+import { getGenerator } from './config';
 import { sortRules } from './sort';
 
 // Currently there's no way of getting the list of
 // directives, so this has to be hardcoded
 const applyVariableDirectives = ['--at-apply', '--uno-apply', '--uno'];
 
-export const FormattedNodesMap = new WeakMap<AnyNode, Doc>();
+const FormattedNodesMap = new WeakMap<AnyNode, Doc>();
 
 const QUOTE_RE = /(^\s*'|'\s*$)/g;
 
-export async function transformCSS(ast: Root, generator: UnoGenerator) {
+export async function transformCSS(ast: Root, options: ParserOptions<AnyNode>) {
+    const generator = await getGenerator(options.filepath);
     const promises: Promise<void>[] = [];
 
     ast.walk((node) => {
@@ -53,7 +54,7 @@ export async function transformCSS(ast: Root, generator: UnoGenerator) {
     await Promise.all(promises);
 }
 
-export function printRules(path: AstPath<AnyNode>): Doc | undefined {
+export function printCSSRules(path: AstPath<AnyNode>): Doc | undefined {
     if (!FormattedNodesMap.has(path.node)) {
         return;
     }

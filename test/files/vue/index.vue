@@ -1,3 +1,22 @@
+<template>
+    <h1 class="
+    
+    color-pink font-size-xl
+    
+    ">
+    
+    
+    aaaaaaaaaaaaaaaaaaaaaaaaaaa
+    
+    </h1>
+
+    <!-- Not supported yet -->
+    <div :class="{'bg-red': true, 'size-5': true}"></div>
+</template>
+
+<style lang="less">
+
+
 // Order
 a:has(span) {
     @apply align-middle font-extralight opacity-0 invisible text-sm italic;
@@ -5,6 +24,7 @@ a:has(span) {
 
 // Line breaks
 a:has(span) {
+    @apply align-middle font-extralight opacity-0 invisible text-sm italic transition-all cursor-pointer;
     --at-apply: align-middle font-extralight opacity-0 invisible text-sm italic transition-all cursor-pointer;
 }
 
@@ -23,8 +43,5 @@ body > #app {
     @apply hover:(font-medium bg-gray-400) hover:font-light;
 }
 body > #app {
-    @apply hover:font-medium hover:bg-gray-400 hover:font-light;
-}
-body > #app {
     --at-apply: hover:(font-medium bg-gray-400) hover:font-light;
-}
+}</style>
