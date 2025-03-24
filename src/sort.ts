@@ -2,8 +2,6 @@ import type { Doc } from 'prettier';
 import { builders } from 'prettier/doc';
 import { notNull, parseVariantGroup, type UnoGenerator } from 'unocss';
 
-const QUOTE_RE = /(^\s*'|'\s*$)/g;
-
 /**
  * Copied from https://github.com/unocss/unocss/blob/0c8404c98e7facb922be6505b4a19aa80b49c5dd/virtual-shared/integration/src/sort-rules.ts#L4-L44
  */
@@ -11,11 +9,6 @@ export async function sortRules(
     rules: string,
     uno: UnoGenerator,
 ): Promise<Doc> {
-    const hasQuotes = QUOTE_RE.test(rules);
-    if (hasQuotes) {
-        rules = rules.replace(QUOTE_RE, '');
-    }
-
     const unknown: string[] = [];
 
     // enable details for variant handlers
@@ -54,20 +47,14 @@ export async function sortRules(
         ? collapseVariantGroup(sorted, expandedResult.prefixes)
         : sorted;
 
-    const quotes = hasQuotes ? "'" : '';
-    const res = [
-        quotes,
-        builders.group(
-            builders.indent(
-                builders.fill([
-                    ...builders.join(builders.line, unknown.filter(Boolean)),
-                    ...builders.join(builders.line, sortedDocs),
-                ]),
-            ),
+    return builders.group(
+        builders.indent(
+            builders.fill([
+                ...builders.join(builders.line, unknown.filter(Boolean)),
+                ...builders.join(builders.line, sortedDocs),
+            ]),
         ),
-        quotes,
-    ];
-    return res;
+    );
 }
 
 // Copied from https://github.com/unocss/unocss/blob/2c24158de0d37c5ba1006c337f61657a6b6e94b7/packages-engine/core/src/utils/variant-group.ts#L105
