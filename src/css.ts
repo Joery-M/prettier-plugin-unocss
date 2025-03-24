@@ -9,11 +9,7 @@ const applyVariableDirectives = ['--at-apply', '--uno-apply', '--uno'];
 
 export const FormattedNodesMap = new WeakMap<AnyNode, Doc>();
 
-export async function transformCSS(
-    ast: Root,
-    generator: UnoGenerator,
-    prettier: ParserOptions,
-) {
+export async function transformCSS(ast: Root, generator: UnoGenerator) {
     const promises: Promise<void>[] = [];
 
     ast.walk((node) => {

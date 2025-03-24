@@ -4,29 +4,23 @@ import postcss from 'prettier/parser-postcss';
 import { getGenerator } from './config';
 import { printRules, transformCSS } from './css';
 
-const builtinParsers = postcss.parsers;
-async function cssParse(text: string, options: ParserOptions<AnyNode>) {
-    const generator = await getGenerator(options.filepath);
-    const parsed: Root = builtinParsers.css.parse(text, options);
-    await transformCSS(parsed, generator, options);
-    return parsed;
+function setupParser(parser: Parser) {
+    return {
+        ...parser,
+        async parse(text: string, options: ParserOptions<AnyNode>) {
+            const generator = await getGenerator(options.filepath);
+            const parsed: Root = parser.parse(text, options);
+            await transformCSS(parsed, generator);
+            return parsed;
+        },
+    };
 }
 
 export const parsers: Record<string, Parser<AnyNode>> = {
-    css: {
-        ...builtinParsers.css,
-        parse: cssParse,
-    },
-    scss: {
-        ...builtinParsers.scss,
-        parse: cssParse,
-    },
-    less: {
-        ...builtinParsers.less,
-        parse: cssParse,
-    },
+    css: setupParser(postcss.parsers.css),
+    scss: setupParser(postcss.parsers.scss),
+    less: setupParser(postcss.parsers.less),
 };
-export const languages = [];
 
 export const printers: Record<string, Printer<AnyNode>> = {
     postcss: {
