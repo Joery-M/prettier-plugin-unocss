@@ -1,7 +1,6 @@
 import type { AstPath, Doc, ParserOptions } from 'prettier';
-import { printer } from 'prettier/doc';
 import { getGenerator } from './config';
-import { sortRules } from './sort';
+import { sortRules } from './utils/sort';
 
 const FormattedNodesMap = new WeakMap<any, Doc>();
 

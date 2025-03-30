@@ -1,7 +1,7 @@
 import { type AnyNode, type Root } from 'postcss';
 import type { AstPath, Doc, ParserOptions } from 'prettier';
 import { getGenerator } from './config';
-import { sortRules } from './sort';
+import { sortRules } from './utils/sort';
 
 // Currently there's no way of getting the list of
 // directives, so this has to be hardcoded
