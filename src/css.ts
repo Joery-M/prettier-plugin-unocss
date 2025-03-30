@@ -11,7 +11,10 @@ const FormattedNodesMap = new WeakMap<AnyNode, Doc>();
 
 const QUOTE_RE = /(^\s*'|'\s*$)/g;
 
-export async function transformCSS(ast: Root, options: ParserOptions<AnyNode>) {
+export async function transformCSS(
+    ast: Root,
+    options: ParserOptions<AnyNode>,
+): Promise<void> {
     const generator = await getGenerator(options.filepath);
     const promises: Promise<void>[] = [];
 

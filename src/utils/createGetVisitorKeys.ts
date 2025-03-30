@@ -1,7 +1,7 @@
 export function createGetVisitorKeys(
     visitorKeys: Record<string, string[]>,
     typeProperty = 'type',
-) {
+): (node: any) => string[] {
     function getVisitorKeys(node: any) {
         const type = node[typeProperty];
 

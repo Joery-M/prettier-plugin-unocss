@@ -1,6 +1,6 @@
+import { notNull, parseVariantGroup, type UnoGenerator } from '@unocss/core';
 import type { Doc } from 'prettier';
 import { builders } from 'prettier/doc';
-import { notNull, parseVariantGroup, type UnoGenerator } from 'unocss';
 
 /**
  * Copied from https://github.com/unocss/unocss/blob/0c8404c98e7facb922be6505b4a19aa80b49c5dd/virtual-shared/integration/src/sort-rules.ts#L4-L44

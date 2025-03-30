@@ -1,5 +1,5 @@
+import { createGenerator, type UnoGenerator } from '@unocss/core';
 import { dirname } from 'path';
-import { createGenerator, UnoGenerator } from 'unocss';
 
 const promises = new Map<string, Promise<UnoGenerator<any>> | undefined>();
 
@@ -12,7 +12,7 @@ async function findGenerator(configPath: string) {
     const { config, sources } = await loadConfig(dirname(configPath));
     if (!sources.length)
         throw new Error(
-            '[prettier-plugin-unocss] AA No config file found, or create a `uno.config.ts` file in your project root and try again.',
+            '[prettier-plugin-unocss] No config file found, or create a `uno.config.ts` file in your project root and try again.',
         );
     return createGenerator({
         ...config,
@@ -20,7 +20,9 @@ async function findGenerator(configPath: string) {
     });
 }
 
-export async function getGenerator(configPath: string) {
+export async function getGenerator(
+    configPath: string,
+): Promise<UnoGenerator<any>> {
     let promise = promises.get(configPath);
     if (!promise) {
         promise = findGenerator(configPath);

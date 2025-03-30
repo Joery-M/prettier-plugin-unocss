@@ -4,7 +4,10 @@ import { sortRules } from './utils/sort';
 
 const FormattedNodesMap = new WeakMap<any, Doc>();
 
-export async function transformHTML(ast: any, options: ParserOptions<any>) {
+export async function transformHTML(
+    ast: any,
+    options: ParserOptions<any>,
+): Promise<void> {
     const generator = await getGenerator(options.filepath);
     const promises: Promise<void>[] = [];
 
@@ -28,7 +31,7 @@ export function printHTMLRules(path: AstPath<any>): Doc | undefined {
     }
 }
 
-export const visitorKeys = {
+export const visitorKeys: Record<string, string[]> = {
     'front-matter': [],
     root: ['children'],
     element: ['children'],
