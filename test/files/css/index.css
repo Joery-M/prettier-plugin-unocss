@@ -20,3 +20,8 @@ body > #app {
 body > #app {
     --at-apply: hover:(font-medium bg-gray-400) hover:font-light;
 }
+
+/* Unknown rule */
+#icon {
+    @apply i-ph-arrow-u-down-left inline-block size-3.5 v-middle;
+}

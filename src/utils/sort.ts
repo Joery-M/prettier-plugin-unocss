@@ -53,13 +53,12 @@ export async function sortRules(
             builders.indent([
                 builders.indent([
                     builders.softline,
-                    builders.fill([
-                        ...builders.join(
+                    builders.fill(
+                        builders.join(
                             builders.line,
-                            unknown.filter(Boolean),
+                            [...unknown, ...sortedDocs].filter(Boolean),
                         ),
-                        ...builders.join(builders.line, sortedDocs),
-                    ]),
+                    ),
                 ]),
                 builders.softline,
             ]),
@@ -67,10 +66,12 @@ export async function sortRules(
     } else {
         return builders.group(
             builders.indent(
-                builders.fill([
-                    ...builders.join(builders.line, unknown.filter(Boolean)),
-                    ...builders.join(builders.line, sortedDocs),
-                ]),
+                builders.fill(
+                    builders.join(
+                        builders.line,
+                        [...unknown, ...sortedDocs].filter(Boolean),
+                    ),
+                ),
             ),
         );
     }
