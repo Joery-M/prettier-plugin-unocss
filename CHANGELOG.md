@@ -1,6 +1,23 @@
 # Changelog
 
 
+## v1.0.1
+
+[compare changes](https://github.com/joery-m/prettier-plugin-unocss/compare/v1.0.0...v1.0.1)
+
+### 🩹 Fixes
+
+- Had to change name ([abb75ef](https://github.com/joery-m/prettier-plugin-unocss/commit/abb75ef))
+- Prettier semver version ([19f57d2](https://github.com/joery-m/prettier-plugin-unocss/commit/19f57d2))
+
+### 🏡 Chore
+
+- Release 1.0.0 ([4ad296a](https://github.com/joery-m/prettier-plugin-unocss/commit/4ad296a))
+
+### ❤️ Contributors
+
+- Joery ([@Joery-M](https://github.com/Joery-M))
+
 ## v1.0.0
 
 

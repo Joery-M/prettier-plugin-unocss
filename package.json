@@ -1,6 +1,6 @@
 {
   "name": "joery-prettier-plugin-unocss",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Format and sort UnoCSS at-directives and rules",
   "type": "module",
   "main": "./dist/index.cjs",
