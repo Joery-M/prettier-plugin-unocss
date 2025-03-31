@@ -32,7 +32,9 @@
     "build": "unbuild && rm dist/index.d.mts dist/index.d.cts",
     "test": "vitest",
     "test:direct": "cd test && prettier files/**/*",
-    "test:direct-custom": "cd test && prettier"
+    "test:direct-custom": "cd test && prettier",
+    "publish": "pnpm build && pnpm test run && pnpx changelogen@latest --output",
+    "publish:github": "pnpx changelogen@latest gh release"
   },
   "devDependencies": {
     "@types/node": "^22.13.14",
