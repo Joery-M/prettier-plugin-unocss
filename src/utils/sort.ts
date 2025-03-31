@@ -8,6 +8,7 @@ import { builders } from 'prettier/doc';
 export async function sortRules(
     rules: string,
     uno: UnoGenerator,
+    type: 'css' | 'html',
 ): Promise<Doc> {
     const unknown: string[] = [];
 
@@ -47,14 +48,32 @@ export async function sortRules(
         ? collapseVariantGroup(sorted, expandedResult.prefixes)
         : sorted;
 
-    return builders.group(
-        builders.indent(
-            builders.fill([
-                ...builders.join(builders.line, unknown.filter(Boolean)),
-                ...builders.join(builders.line, sortedDocs),
+    if (type === 'html') {
+        return builders.group(
+            builders.indent([
+                builders.indent([
+                    builders.softline,
+                    builders.fill([
+                        ...builders.join(
+                            builders.line,
+                            unknown.filter(Boolean),
+                        ),
+                        ...builders.join(builders.line, sortedDocs),
+                    ]),
+                ]),
+                builders.softline,
             ]),
-        ),
-    );
+        );
+    } else {
+        return builders.group(
+            builders.indent(
+                builders.fill([
+                    ...builders.join(builders.line, unknown.filter(Boolean)),
+                    ...builders.join(builders.line, sortedDocs),
+                ]),
+            ),
+        );
+    }
 }
 
 // Copied from https://github.com/unocss/unocss/blob/2c24158de0d37c5ba1006c337f61657a6b6e94b7/packages-engine/core/src/utils/variant-group.ts#L105

@@ -25,7 +25,7 @@ export async function transformCSS(
             if (hasQuotes) params = params.replace(QUOTE_RE, '');
 
             promises.push(
-                sortRules(params, generator).then((newParams) => {
+                sortRules(params, generator, 'css').then((newParams) => {
                     FormattedNodesMap.set(
                         node,
                         hasQuotes ? ["'", newParams, "'"] : newParams,
@@ -44,7 +44,7 @@ export async function transformCSS(
             if (hasQuotes) params = params.replace(QUOTE_RE, '');
 
             promises.push(
-                sortRules(params, generator).then((newParams) => {
+                sortRules(params, generator, 'css').then((newParams) => {
                     FormattedNodesMap.set(
                         node,
                         hasQuotes ? ["'", newParams, "'"] : newParams,

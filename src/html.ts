@@ -14,7 +14,7 @@ export async function transformHTML(
     ast.walk((node: any) => {
         if (node.type === 'attribute' && node.name === 'class') {
             promises.push(
-                sortRules(node.value, generator).then((newValue) => {
+                sortRules(node.value, generator, 'html').then((newValue) => {
                     FormattedNodesMap.set(node, newValue);
                 }),
             );
