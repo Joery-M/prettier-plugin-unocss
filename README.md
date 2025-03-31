@@ -1,4 +1,4 @@
-<h1 align="center">@joery/prettier-plugin-unocss</h1>
+<h1 align="center">joery-prettier-plugin-unocss</h1>
 
 Format and sort UnoCSS at-directives and rules.
 

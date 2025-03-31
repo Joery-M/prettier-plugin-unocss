@@ -1,5 +1,5 @@
 {
-  "name": "@joery/prettier-plugin-unocss",
+  "name": "joery-prettier-plugin-unocss",
   "version": "1.0.0",
   "description": "Format and sort UnoCSS at-directives and rules",
   "type": "module",
