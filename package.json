@@ -1,6 +1,6 @@
 {
   "name": "joery-prettier-plugin-unocss",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Format and sort UnoCSS at-directives and rules",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -33,7 +33,7 @@
     "test": "vitest",
     "test:direct": "cd test && prettier files/**/*",
     "test:direct-custom": "cd test && prettier",
-    "prepublish": "pnpm build && pnpm test run",
+    "prepack": "pnpm build && pnpm test run",
     "changelog": "pnpx changelogen@latest --output",
     "publish:github": "pnpx changelogen@latest gh release"
   },

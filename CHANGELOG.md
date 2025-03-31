@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v1.0.2
+
+[compare changes](https://github.com/joery-m/prettier-plugin-unocss/compare/v1.0.1...v1.0.2)
+
+### 🩹 Fixes
+
+- No space between unknown rules and known rules ([bcbd6ad](https://github.com/joery-m/prettier-plugin-unocss/commit/bcbd6ad))
+
+### ❤️ Contributors
+
+- Joery ([@Joery-M](https://github.com/Joery-M))
+
 ## v1.0.1
 
 [compare changes](https://github.com/joery-m/prettier-plugin-unocss/compare/v1.0.0...v1.0.1)
